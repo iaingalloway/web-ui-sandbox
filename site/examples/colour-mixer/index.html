@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Colour mixer</title>
+    <style>
+      :root {
+        --colour: rgb(64 128 192);
+      }
+
+      body {
+        font-family: system-ui, sans-serif;
+      }
+
+      main {
+        margin: 2rem auto;
+        max-width: 40rem;
+      }
+
+      #swatch {
+        aspect-ratio: 2 / 1;
+        background: var(--colour);
+        border: 1px solid black;
+      }
+
+      label {
+        display: block;
+        margin-top: 1rem;
+      }
+
+      input {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Colour mixer</h1>
+      <div id="swatch" aria-label="Mixed colour preview"></div>
+      <p id="value" aria-live="polite"></p>
+      <label>
+        Red
+        <input type="range" name="red" min="0" max="255" value="64" />
+      </label>
+      <label>
+        Green
+        <input type="range" name="green" min="0" max="255" value="128" />
+      </label>
+      <label>
+        Blue
+        <input type="range" name="blue" min="0" max="255" value="192" />
+      </label>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
