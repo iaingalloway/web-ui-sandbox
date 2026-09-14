@@ -1,0 +1,17 @@
+{
+  "name": "web-ui-sandbox",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.1.1",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "format": "prettier --write .",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "check": "pnpm run typecheck && prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.4.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
