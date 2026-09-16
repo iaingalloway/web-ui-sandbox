@@ -21,6 +21,7 @@
         --signal: #bbff5c;
         --glitch-left: #ff4757;
         --glitch-right: #00d9ff;
+        --glitch-play-state: running;
       }
 
       * {
@@ -68,6 +69,37 @@
 
       .mode-controls {
         align-items: flex-end;
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .effect-controls {
+        color: var(--signal);
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-align: right;
+        text-transform: uppercase;
+      }
+
+      .effect-controls .control-group {
+        color: var(--muted);
+        margin-top: 0.5rem;
+      }
+
+      .effect-controls .control-group {
+        display: grid;
+        gap: 0.5rem 1.5rem;
+        grid-template-columns: repeat(2, max-content);
+      }
+
+      .settings-column {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
@@ -137,189 +169,300 @@
       }
 
       [data-preview="slow"] .glitch-text {
-        --glitch-jitter-name: glitch-jitter-preview;
-        --chromatic-slice-name: chromatic-slice-preview;
+        --horizontal-jitter-name: horizontal-jitter-preview;
+        --skew-jitter-name: skew-jitter-preview;
+        --chromatic-aberration-name: chromatic-aberration-preview;
+        --slice-reveal-name: slice-reveal-preview;
+      }
+
+      [data-horizontal-jitter="off"] {
+        --horizontal-jitter-play-state: paused;
+      }
+
+      [data-skew-jitter="off"] {
+        --skew-jitter-play-state: paused;
+      }
+
+      [data-chromatic-aberration="off"] {
+        --chromatic-aberration-play-state: paused;
+      }
+
+      [data-slices="off"] {
+        --slice-play-state: paused;
+      }
+
+      [data-slices="off"] .glitch-text::after {
+        visibility: hidden;
       }
 
       .glitch-text {
-        animation: var(--glitch-jitter-name, glitch-jitter) 5s
+        animation: var(--horizontal-jitter-name, horizontal-jitter) 5s
           var(--glitch-timing) infinite;
-        --jitter-rest-shadow:
+        animation-play-state: var(
+          --horizontal-jitter-play-state,
+          var(--glitch-play-state)
+        );
+        --horizontal-jitter-rest: translateX(0);
+        --horizontal-jitter-frame-one: translateX(-3px);
+        --horizontal-jitter-frame-two: translateX(2px);
+        --horizontal-jitter-frame-three: translateX(-1px);
+        --horizontal-jitter-frame-four: translateX(1px);
+        --chromatic-rest-shadow:
           2px 0 color-mix(in srgb, var(--glitch-left) 35%, transparent),
           -2px 0 color-mix(in srgb, var(--glitch-right) 35%, transparent);
-        --jitter-rest-transform: none;
-        --jitter-frame-one-shadow:
+        --chromatic-frame-one-shadow:
           6px 0 color-mix(in srgb, var(--glitch-left) 70%, transparent),
           -4px 0 color-mix(in srgb, var(--glitch-right) 70%, transparent);
-        --jitter-frame-one-transform: translateX(-3px) skewX(-0.5deg);
-        --jitter-frame-two-shadow:
+        --chromatic-frame-two-shadow:
           -5px 0 color-mix(in srgb, var(--glitch-left) 60%, transparent),
           7px 0 color-mix(in srgb, var(--glitch-right) 60%, transparent),
           0 2px rgb(199 163 255 / 0.3);
-        --jitter-frame-two-transform: translateX(2px) skewX(0.8deg);
-        --jitter-frame-three-shadow:
+        --chromatic-frame-three-shadow:
           4px 0 color-mix(in srgb, var(--glitch-left) 80%, transparent),
           -6px 0 color-mix(in srgb, var(--glitch-right) 80%, transparent);
-        --jitter-frame-three-transform: translateX(-1px) skewX(-0.3deg);
-        --jitter-frame-four-shadow:
+        --chromatic-frame-four-shadow:
           -3px 0 color-mix(in srgb, var(--glitch-left) 50%, transparent),
           5px 0 color-mix(in srgb, var(--glitch-right) 50%, transparent);
-        --jitter-frame-four-transform: translateX(1px);
+        --skew-jitter-rest: skewX(0);
+        --skew-jitter-frame-one: skewX(-0.5deg);
+        --skew-jitter-frame-two: skewX(0.8deg);
+        --skew-jitter-frame-three: skewX(-0.3deg);
+        --skew-jitter-frame-four: skewX(0);
         --slice-rest-clip: none;
-        --slice-rest-shadow: none;
         --slice-frame-one-clip: inset(15% 0 45%);
-        --slice-frame-one-shadow:
-          -7px 0 color-mix(in srgb, var(--glitch-left) 40%, transparent),
-          7px 0 color-mix(in srgb, var(--glitch-right) 40%, transparent);
         --slice-frame-two-clip: inset(55% 0 15%);
-        --slice-frame-two-shadow:
-          5px 0 color-mix(in srgb, var(--glitch-left) 50%, transparent),
-          -5px 0 color-mix(in srgb, var(--glitch-right) 50%, transparent);
         --slice-frame-three-clip: inset(10% 0 65%);
-        --slice-frame-three-shadow:
-          -6px 0 color-mix(in srgb, var(--glitch-left) 30%, transparent),
-          6px 0 color-mix(in srgb, var(--glitch-right) 30%, transparent);
         --slice-frame-four-clip: inset(35% 0);
-        --slice-frame-four-shadow:
-          4px 0 color-mix(in srgb, var(--glitch-left) 20%, transparent),
-          -4px 0 color-mix(in srgb, var(--glitch-right) 20%, transparent);
-        text-shadow: var(--jitter-rest-shadow);
+        text-shadow: var(--chromatic-rest-shadow);
+      }
+
+      .glitch-text__content {
+        animation:
+          var(--skew-jitter-name, skew-jitter) 5s var(--glitch-timing) infinite,
+          var(--chromatic-aberration-name, chromatic-aberration) 5s
+            var(--glitch-timing) infinite;
+        animation-play-state:
+          var(--skew-jitter-play-state, var(--glitch-play-state)),
+          var(--chromatic-aberration-play-state, var(--glitch-play-state));
+        display: inline-block;
       }
 
       .glitch-text::after {
-        color: transparent;
+        color: color-mix(in srgb, var(--ink) 70%, transparent);
         content: attr(data-text);
         inset: 0;
+        mix-blend-mode: screen;
         pointer-events: none;
         position: absolute;
       }
 
       .glitch-text::after {
-        animation: var(--chromatic-slice-name, chromatic-slice) 5s
-          var(--glitch-timing) infinite;
+        animation:
+          var(--slice-reveal-name, slice-reveal) 5s var(--glitch-timing)
+            infinite,
+          var(--chromatic-aberration-name, chromatic-aberration) 5s
+            var(--glitch-timing) infinite;
+        animation-play-state:
+          var(--slice-play-state, var(--glitch-play-state)),
+          var(--chromatic-aberration-play-state, var(--glitch-play-state));
       }
 
-      @keyframes glitch-jitter {
+      @keyframes horizontal-jitter {
         0%,
-        86%,
-        92%,
+        95%,
         100% {
-          text-shadow: var(--jitter-rest-shadow);
-          transform: var(--jitter-rest-transform);
+          transform: var(--horizontal-jitter-rest);
         }
 
-        87% {
-          text-shadow: var(--jitter-frame-one-shadow);
-          transform: var(--jitter-frame-one-transform);
+        96% {
+          transform: var(--horizontal-jitter-frame-one);
         }
 
-        88% {
-          text-shadow: var(--jitter-frame-two-shadow);
-          transform: var(--jitter-frame-two-transform);
+        97% {
+          transform: var(--horizontal-jitter-frame-two);
         }
 
-        89% {
-          text-shadow: var(--jitter-frame-three-shadow);
-          transform: var(--jitter-frame-three-transform);
+        98% {
+          transform: var(--horizontal-jitter-frame-three);
         }
 
-        90% {
-          text-shadow: var(--jitter-frame-four-shadow);
-          transform: var(--jitter-frame-four-transform);
+        99% {
+          transform: var(--horizontal-jitter-frame-four);
         }
       }
 
-      @keyframes chromatic-slice {
+      @keyframes skew-jitter {
         0%,
-        86%,
-        92%,
+        95%,
+        100% {
+          transform: var(--skew-jitter-rest);
+        }
+
+        96% {
+          transform: var(--skew-jitter-frame-one);
+        }
+
+        97% {
+          transform: var(--skew-jitter-frame-two);
+        }
+
+        98% {
+          transform: var(--skew-jitter-frame-three);
+        }
+
+        99% {
+          transform: var(--skew-jitter-frame-four);
+        }
+      }
+
+      @keyframes chromatic-aberration {
+        0%,
+        95%,
+        100% {
+          text-shadow: var(--chromatic-rest-shadow);
+        }
+
+        96% {
+          text-shadow: var(--chromatic-frame-one-shadow);
+        }
+
+        97% {
+          text-shadow: var(--chromatic-frame-two-shadow);
+        }
+
+        98% {
+          text-shadow: var(--chromatic-frame-three-shadow);
+        }
+
+        99% {
+          text-shadow: var(--chromatic-frame-four-shadow);
+        }
+      }
+
+      @keyframes slice-reveal {
+        0%,
+        95%,
         100% {
           clip-path: var(--slice-rest-clip);
-          text-shadow: var(--slice-rest-shadow);
         }
 
-        87% {
+        96% {
           clip-path: var(--slice-frame-one-clip);
-          text-shadow: var(--slice-frame-one-shadow);
         }
 
-        88% {
+        97% {
           clip-path: var(--slice-frame-two-clip);
-          text-shadow: var(--slice-frame-two-shadow);
         }
 
-        89% {
+        98% {
           clip-path: var(--slice-frame-three-clip);
-          text-shadow: var(--slice-frame-three-shadow);
         }
 
-        90% {
+        99% {
           clip-path: var(--slice-frame-four-clip);
-          text-shadow: var(--slice-frame-four-shadow);
         }
       }
 
-      @keyframes glitch-jitter-preview {
+      @keyframes horizontal-jitter-preview {
         0%,
         100% {
-          text-shadow: var(--jitter-rest-shadow);
-          transform: var(--jitter-rest-transform);
+          transform: var(--horizontal-jitter-rest);
         }
 
         20% {
-          text-shadow: var(--jitter-frame-one-shadow);
-          transform: var(--jitter-frame-one-transform);
+          transform: var(--horizontal-jitter-frame-one);
         }
 
         40% {
-          text-shadow: var(--jitter-frame-two-shadow);
-          transform: var(--jitter-frame-two-transform);
+          transform: var(--horizontal-jitter-frame-two);
         }
 
         60% {
-          text-shadow: var(--jitter-frame-three-shadow);
-          transform: var(--jitter-frame-three-transform);
+          transform: var(--horizontal-jitter-frame-three);
         }
 
         80% {
-          text-shadow: var(--jitter-frame-four-shadow);
-          transform: var(--jitter-frame-four-transform);
+          transform: var(--horizontal-jitter-frame-four);
         }
       }
 
-      @keyframes chromatic-slice-preview {
+      @keyframes skew-jitter-preview {
+        0%,
+        100% {
+          transform: var(--skew-jitter-rest);
+        }
+
+        20% {
+          transform: var(--skew-jitter-frame-one);
+        }
+
+        40% {
+          transform: var(--skew-jitter-frame-two);
+        }
+
+        60% {
+          transform: var(--skew-jitter-frame-three);
+        }
+
+        80% {
+          transform: var(--skew-jitter-frame-four);
+        }
+      }
+
+      @keyframes chromatic-aberration-preview {
+        0%,
+        100% {
+          text-shadow: var(--chromatic-rest-shadow);
+        }
+
+        20% {
+          text-shadow: var(--chromatic-frame-one-shadow);
+        }
+
+        40% {
+          text-shadow: var(--chromatic-frame-two-shadow);
+        }
+
+        60% {
+          text-shadow: var(--chromatic-frame-three-shadow);
+        }
+
+        80% {
+          text-shadow: var(--chromatic-frame-four-shadow);
+        }
+      }
+
+      @keyframes slice-reveal-preview {
         0%,
         100% {
           clip-path: var(--slice-rest-clip);
-          text-shadow: var(--slice-rest-shadow);
         }
 
         20% {
           clip-path: var(--slice-frame-one-clip);
-          text-shadow: var(--slice-frame-one-shadow);
         }
 
         40% {
           clip-path: var(--slice-frame-two-clip);
-          text-shadow: var(--slice-frame-two-shadow);
         }
 
         60% {
           clip-path: var(--slice-frame-three-clip);
-          text-shadow: var(--slice-frame-three-shadow);
         }
 
         80% {
           clip-path: var(--slice-frame-four-clip);
-          text-shadow: var(--slice-frame-four-shadow);
         }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .glitch-text,
-        .glitch-text::after {
-          animation: none;
+        :root {
+          --glitch-play-state: paused;
         }
+      }
+
+      [data-motion="reduced"] {
+        --glitch-play-state: paused;
       }
 
       @media (width < 34rem) {
@@ -330,8 +473,12 @@
 
         .mode-controls {
           align-items: flex-start;
+          flex-direction: column;
         }
-      }
+
+        .effect-controls {
+          text-align: left;
+        }
     </style>
   </head>
   <body>
@@ -339,19 +486,48 @@
       <header class="masthead">
         <p>Signal log 018</p>
         <div class="mode-controls">
-          <label class="mode-control">
-            <input id="smooth-mode" type="checkbox" />
-            Smooth interpolation
-          </label>
-          <label class="mode-control">
-            <input id="slow-preview" type="checkbox" />
-            Slow preview
-          </label>
+          <details class="effect-controls">
+            <summary>Settings</summary>
+            <div class="control-group">
+              <div class="settings-column">
+                <label class="mode-control">
+                  <input id="horizontal-jitter" type="checkbox" checked />
+                  Horizontal jitter
+                </label>
+                <label class="mode-control">
+                  <input id="skew-jitter" type="checkbox" checked />
+                  Skew jitter
+                </label>
+                <label class="mode-control">
+                  <input id="chromatic-aberration" type="checkbox" checked />
+                  Chromatic aberration
+                </label>
+                <label class="mode-control">
+                  <input id="slice-effect" type="checkbox" checked />
+                  Chromatic slices
+                </label>
+              </div>
+              <div class="settings-column">
+                <label class="mode-control">
+                  <input id="smooth-mode" type="checkbox" />
+                  Smooth interpolation
+                </label>
+                <label class="mode-control">
+                  <input id="slow-preview" type="checkbox" />
+                  Slow preview
+                </label>
+                <label class="mode-control">
+                  <input id="reduce-motion" type="checkbox" />
+                  Reduce motion
+                </label>
+              </div>
+            </div>
+          </details>
         </div>
       </header>
       <article>
         <h1 class="glitch-text" data-text="Transmission Lost">
-          Transmission Lost
+          <span class="glitch-text__content">Transmission Lost</span>
         </h1>
         <p>
           The city went dark at 03:17, one district at a time. Every street
@@ -364,7 +540,7 @@
           had been disconnected for nineteen years.
         </p>
         <h2 class="glitch-text" data-text="Recovered Fragments">
-          Recovered Fragments
+          <span class="glitch-text__content">Recovered Fragments</span>
         </h2>
         <p>
           Archive cameras caught a figure crossing Platform Nine after curfew.
