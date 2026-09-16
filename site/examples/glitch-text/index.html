@@ -160,12 +160,16 @@
         position: relative;
       }
 
-      [data-motion="stepped"] .glitch-text {
+      [data-motion="stepped"] {
         --glitch-timing: steps(1);
       }
 
-      [data-motion="smooth"] .glitch-text {
+      [data-motion="smooth"] {
         --glitch-timing: ease-in-out;
+      }
+
+      [data-preview="slow"] {
+        --scanline-interference-name: scanline-interference-preview;
       }
 
       [data-preview="slow"] .glitch-text {
@@ -173,6 +177,12 @@
         --skew-jitter-name: skew-jitter-preview;
         --chromatic-aberration-name: chromatic-aberration-preview;
         --slice-reveal-name: slice-reveal-preview;
+        --vertical-roll-name: vertical-roll-preview;
+        --signal-dropout-name: signal-dropout-preview;
+        --luminance-surge-name: luminance-surge-preview;
+        --turbulence-displacement-name: turbulence-displacement-preview;
+        --zalgo-distortion-name: zalgo-distortion-preview;
+        --zalgo-marks-name: zalgo-marks-preview;
       }
 
       [data-horizontal-jitter="off"] {
@@ -195,13 +205,85 @@
         visibility: hidden;
       }
 
-      .glitch-text {
-        animation: var(--horizontal-jitter-name, horizontal-jitter) 5s
+      [data-vertical-roll="off"] {
+        --vertical-roll-play-state: paused;
+      }
+
+      [data-vertical-roll="off"] .glitch-text__roll {
+        visibility: hidden;
+      }
+
+      [data-scanline-interference="off"] {
+        --scanline-interference-play-state: paused;
+      }
+
+      [data-scanline-interference="off"] body::before {
+        visibility: hidden;
+      }
+
+      [data-signal-dropout="off"] {
+        --signal-dropout-play-state: paused;
+      }
+
+      [data-signal-dropout="off"] .glitch-text__dropout {
+        visibility: hidden;
+      }
+
+      [data-luminance-surge="off"] {
+        --luminance-surge-play-state: paused;
+      }
+
+      [data-luminance-surge="off"] .glitch-text__content {
+        filter: none;
+      }
+
+      [data-turbulence-displacement="off"] {
+        --turbulence-displacement-play-state: paused;
+      }
+
+      [data-turbulence-displacement="off"] .glitch-text {
+        filter: none;
+      }
+
+      [data-zalgo-distortion="off"] {
+        --zalgo-distortion-play-state: paused;
+      }
+
+      [data-zalgo-distortion="off"] .glitch-text__zalgo {
+        visibility: hidden;
+      }
+
+      body::before {
+        animation: var(--scanline-interference-name, scanline-interference) 5s
           var(--glitch-timing) infinite;
         animation-play-state: var(
-          --horizontal-jitter-play-state,
+          --scanline-interference-play-state,
           var(--glitch-play-state)
         );
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0,
+          transparent 2px,
+          rgb(187 255 92 / 0.16) 2px,
+          rgb(187 255 92 / 0.16) 3px
+        );
+        content: "";
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: fixed;
+        z-index: 1;
+      }
+
+      .glitch-text {
+        animation:
+          var(--horizontal-jitter-name, horizontal-jitter) 5s
+            var(--glitch-timing) infinite,
+          var(--turbulence-displacement-name, turbulence-displacement) 5s
+            var(--glitch-timing) infinite;
+        animation-play-state:
+          var(--horizontal-jitter-play-state, var(--glitch-play-state)),
+          var(--turbulence-displacement-play-state, var(--glitch-play-state));
         --horizontal-jitter-rest: translateX(0);
         --horizontal-jitter-frame-one: translateX(-3px);
         --horizontal-jitter-frame-two: translateX(2px);
@@ -240,11 +322,122 @@
         animation:
           var(--skew-jitter-name, skew-jitter) 5s var(--glitch-timing) infinite,
           var(--chromatic-aberration-name, chromatic-aberration) 5s
-            var(--glitch-timing) infinite;
+            var(--glitch-timing) infinite,
+          var(--luminance-surge-name, luminance-surge) 5s var(--glitch-timing)
+            infinite;
         animation-play-state:
           var(--skew-jitter-play-state, var(--glitch-play-state)),
-          var(--chromatic-aberration-play-state, var(--glitch-play-state));
+          var(--chromatic-aberration-play-state, var(--glitch-play-state)),
+          var(--luminance-surge-play-state, var(--glitch-play-state));
         display: inline-block;
+      }
+
+      .glitch-text__roll,
+      .glitch-text__dropout,
+      .glitch-text__zalgo {
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      .glitch-text__roll::after,
+      .glitch-text__dropout::after {
+        content: attr(data-text);
+      }
+
+      .glitch-text__roll {
+        animation: var(--vertical-roll-name, vertical-roll) 5s
+          var(--glitch-timing) infinite;
+        animation-play-state: var(
+          --vertical-roll-play-state,
+          var(--glitch-play-state)
+        );
+        clip-path: inset(100% 0 0);
+        color: color-mix(in srgb, var(--signal) 45%, transparent);
+        mix-blend-mode: screen;
+      }
+
+      .glitch-text__dropout {
+        animation: var(--signal-dropout-name, signal-dropout) 5s
+          var(--glitch-timing) infinite;
+        animation-play-state: var(
+          --signal-dropout-play-state,
+          var(--glitch-play-state)
+        );
+        clip-path: inset(100% 0 0);
+        color: var(--background);
+      }
+
+      .glitch-text__zalgo {
+        animation: var(--zalgo-distortion-name, zalgo-distortion) 5s
+          var(--glitch-timing) infinite;
+        animation-play-state: var(
+          --zalgo-distortion-play-state,
+          var(--glitch-play-state)
+        );
+        color: color-mix(in srgb, var(--glitch-left) 72%, var(--signal));
+        opacity: 0;
+        text-shadow: 2px 0 var(--glitch-right);
+      }
+
+      .glitch-text__zalgo-mark {
+        font-family: sans-serif;
+        font-size: 1.1em;
+        line-height: 1;
+        position: absolute;
+      }
+
+      .glitch-text__zalgo-set {
+        animation: var(--zalgo-marks-name, zalgo-marks) 5s var(--glitch-timing)
+          infinite;
+        animation-play-state: var(
+          --zalgo-distortion-play-state,
+          var(--glitch-play-state)
+        );
+        inset: 0;
+        opacity: 0;
+        position: absolute;
+      }
+
+      .glitch-text__zalgo-set--one {
+        --zalgo-frame-one-opacity: 1;
+      }
+
+      .glitch-text__zalgo-set--two {
+        --zalgo-frame-two-opacity: 1;
+      }
+
+      .glitch-text__zalgo-set--three {
+        --zalgo-frame-three-opacity: 1;
+      }
+
+      .glitch-text__zalgo-set--four {
+        --zalgo-frame-four-opacity: 1;
+      }
+
+      .glitch-text__zalgo-mark:nth-child(1) {
+        left: 8%;
+        top: -0.1em;
+      }
+
+      .glitch-text__zalgo-mark:nth-child(2) {
+        left: 25%;
+        top: 0.08em;
+      }
+
+      .glitch-text__zalgo-mark:nth-child(3) {
+        left: 48%;
+        top: -0.16em;
+      }
+
+      .glitch-text__zalgo-mark:nth-child(4) {
+        left: 69%;
+        top: 0.1em;
+      }
+
+      .glitch-text__zalgo-mark:nth-child(5) {
+        left: 88%;
+        top: -0.08em;
       }
 
       .glitch-text::after {
@@ -363,6 +556,183 @@
         }
       }
 
+      @keyframes vertical-roll {
+        0%,
+        95%,
+        100% {
+          clip-path: inset(100% 0 0);
+          transform: translateY(0);
+        }
+
+        96% {
+          clip-path: inset(8% 0 70%);
+          transform: translateY(-5px);
+        }
+
+        97% {
+          clip-path: inset(65% 0 12%);
+          transform: translateY(4px);
+        }
+
+        98% {
+          clip-path: inset(28% 0 48%);
+          transform: translateY(-3px);
+        }
+
+        99% {
+          clip-path: inset(48% 0 25%);
+          transform: translateY(2px);
+        }
+      }
+
+      @keyframes scanline-interference {
+        0%,
+        95%,
+        100% {
+          background-position-y: 0;
+          opacity: 0;
+        }
+
+        96% {
+          background-position-y: 2px;
+          opacity: 0.35;
+        }
+
+        97% {
+          background-position-y: -3px;
+          opacity: 0.2;
+        }
+
+        98% {
+          background-position-y: 4px;
+          opacity: 0.4;
+        }
+
+        99% {
+          background-position-y: -1px;
+          opacity: 0.15;
+        }
+      }
+
+      @keyframes signal-dropout {
+        0%,
+        95%,
+        100% {
+          clip-path: inset(100% 0 0);
+        }
+
+        96% {
+          clip-path: inset(18% 0 72%);
+        }
+
+        97% {
+          clip-path: inset(59% 0 26%);
+        }
+
+        98% {
+          clip-path: inset(39% 0 50%);
+        }
+
+        99% {
+          clip-path: inset(77% 0 13%);
+        }
+      }
+
+      @keyframes luminance-surge {
+        0%,
+        95%,
+        100% {
+          filter: brightness(1) contrast(1) saturate(1);
+        }
+
+        96% {
+          filter: brightness(1.2) contrast(1.25) saturate(1.4);
+        }
+
+        97% {
+          filter: brightness(0.85) contrast(1.45) saturate(1.8);
+        }
+
+        98% {
+          filter: brightness(1.35) contrast(1.15) saturate(1.25);
+        }
+
+        99% {
+          filter: brightness(0.9) contrast(1.3) saturate(1.55);
+        }
+      }
+
+      @keyframes turbulence-displacement {
+        0%,
+        95%,
+        100% {
+          filter: none;
+        }
+
+        96%,
+        98% {
+          filter: url(#text-turbulence);
+        }
+
+        97%,
+        99% {
+          filter: url(#text-turbulence-soft);
+        }
+      }
+
+      @keyframes zalgo-distortion {
+        0%,
+        95%,
+        100% {
+          opacity: 0;
+          transform: translateY(0);
+        }
+
+        96% {
+          opacity: 0.65;
+          transform: translateY(-3px);
+        }
+
+        97% {
+          opacity: 0.4;
+          transform: translateY(2px);
+        }
+
+        98% {
+          opacity: 0.75;
+          transform: translateY(-1px);
+        }
+
+        99% {
+          opacity: 0.3;
+          transform: translateY(3px);
+        }
+      }
+
+      @keyframes zalgo-marks {
+        0%,
+        95%,
+        100% {
+          opacity: 0;
+        }
+
+        96% {
+          opacity: var(--zalgo-frame-one-opacity, 0);
+        }
+
+        97% {
+          opacity: var(--zalgo-frame-two-opacity, 0);
+        }
+
+        98% {
+          opacity: var(--zalgo-frame-three-opacity, 0);
+        }
+
+        99% {
+          opacity: var(--zalgo-frame-four-opacity, 0);
+        }
+      }
+
       @keyframes horizontal-jitter-preview {
         0%,
         100% {
@@ -455,6 +825,176 @@
         }
       }
 
+      @keyframes vertical-roll-preview {
+        0%,
+        100% {
+          clip-path: inset(100% 0 0);
+          transform: translateY(0);
+        }
+
+        20% {
+          clip-path: inset(8% 0 70%);
+          transform: translateY(-5px);
+        }
+
+        40% {
+          clip-path: inset(65% 0 12%);
+          transform: translateY(4px);
+        }
+
+        60% {
+          clip-path: inset(28% 0 48%);
+          transform: translateY(-3px);
+        }
+
+        80% {
+          clip-path: inset(48% 0 25%);
+          transform: translateY(2px);
+        }
+      }
+
+      @keyframes scanline-interference-preview {
+        0%,
+        100% {
+          background-position-y: 0;
+          opacity: 0;
+        }
+
+        20% {
+          background-position-y: 2px;
+          opacity: 0.35;
+        }
+
+        40% {
+          background-position-y: -3px;
+          opacity: 0.2;
+        }
+
+        60% {
+          background-position-y: 4px;
+          opacity: 0.4;
+        }
+
+        80% {
+          background-position-y: -1px;
+          opacity: 0.15;
+        }
+      }
+
+      @keyframes signal-dropout-preview {
+        0%,
+        100% {
+          clip-path: inset(100% 0 0);
+        }
+
+        20% {
+          clip-path: inset(18% 0 72%);
+        }
+
+        40% {
+          clip-path: inset(59% 0 26%);
+        }
+
+        60% {
+          clip-path: inset(39% 0 50%);
+        }
+
+        80% {
+          clip-path: inset(77% 0 13%);
+        }
+      }
+
+      @keyframes luminance-surge-preview {
+        0%,
+        100% {
+          filter: brightness(1) contrast(1) saturate(1);
+        }
+
+        20% {
+          filter: brightness(1.2) contrast(1.25) saturate(1.4);
+        }
+
+        40% {
+          filter: brightness(0.85) contrast(1.45) saturate(1.8);
+        }
+
+        60% {
+          filter: brightness(1.35) contrast(1.15) saturate(1.25);
+        }
+
+        80% {
+          filter: brightness(0.9) contrast(1.3) saturate(1.55);
+        }
+      }
+
+      @keyframes turbulence-displacement-preview {
+        0%,
+        100% {
+          filter: none;
+        }
+
+        20%,
+        60% {
+          filter: url(#text-turbulence);
+        }
+
+        40%,
+        80% {
+          filter: url(#text-turbulence-soft);
+        }
+      }
+
+      @keyframes zalgo-distortion-preview {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translateY(0);
+        }
+
+        20% {
+          opacity: 0.65;
+          transform: translateY(-3px);
+        }
+
+        40% {
+          opacity: 0.4;
+          transform: translateY(2px);
+        }
+
+        60% {
+          opacity: 0.75;
+          transform: translateY(-1px);
+        }
+
+        80% {
+          opacity: 0.3;
+          transform: translateY(3px);
+        }
+      }
+
+      @keyframes zalgo-marks-preview {
+        0%,
+        100% {
+          opacity: 0;
+        }
+
+        20% {
+          opacity: var(--zalgo-frame-one-opacity, 0);
+        }
+
+        40% {
+          opacity: var(--zalgo-frame-two-opacity, 0);
+        }
+
+        60% {
+          opacity: var(--zalgo-frame-three-opacity, 0);
+        }
+
+        80% {
+          opacity: var(--zalgo-frame-four-opacity, 0);
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         :root {
           --glitch-play-state: paused;
@@ -479,9 +1019,30 @@
         .effect-controls {
           text-align: left;
         }
+      }
     </style>
   </head>
   <body>
+    <svg aria-hidden="true" height="0" width="0">
+      <filter id="text-turbulence">
+        <feTurbulence
+          baseFrequency="0.015 0.12"
+          numOctaves="2"
+          result="noise"
+          type="fractalNoise"
+        />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" />
+      </filter>
+      <filter id="text-turbulence-soft">
+        <feTurbulence
+          baseFrequency="0.01 0.08"
+          numOctaves="1"
+          result="noise"
+          type="turbulence"
+        />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
+      </filter>
+    </svg>
     <main>
       <header class="masthead">
         <p>Signal log 018</p>
@@ -506,6 +1067,30 @@
                   <input id="slice-effect" type="checkbox" checked />
                   Chromatic slices
                 </label>
+                <label class="mode-control">
+                  <input id="vertical-roll" type="checkbox" checked />
+                  Vertical roll
+                </label>
+                <label class="mode-control">
+                  <input id="scanline-interference" type="checkbox" checked />
+                  Scanline interference
+                </label>
+                <label class="mode-control">
+                  <input id="signal-dropout" type="checkbox" checked />
+                  Signal dropout
+                </label>
+                <label class="mode-control">
+                  <input id="luminance-surge" type="checkbox" checked />
+                  Luminance surge
+                </label>
+                <label class="mode-control">
+                  <input id="turbulence-displacement" type="checkbox" checked />
+                  Turbulence displacement
+                </label>
+                <label class="mode-control">
+                  <input id="zalgo-distortion" type="checkbox" checked />
+                  Zalgo distortion
+                </label>
               </div>
               <div class="settings-column">
                 <label class="mode-control">
@@ -526,8 +1111,58 @@
         </div>
       </header>
       <article>
-        <h1 class="glitch-text" data-text="Transmission Lost">
+        <h1
+          aria-label="Transmission Lost"
+          class="glitch-text"
+          data-text="Transmission Lost"
+        >
           <span class="glitch-text__content">Transmission Lost</span>
+          <span
+            class="glitch-text__roll"
+            aria-hidden="true"
+            data-text="Transmission Lost"
+          ></span>
+          <span
+            class="glitch-text__dropout"
+            aria-hidden="true"
+            data-text="Transmission Lost"
+          ></span>
+          <span class="glitch-text__zalgo" aria-hidden="true"
+            >Transmission Lost
+            <span class="glitch-text__zalgo-set glitch-text__zalgo-set--one"
+              ><span class="glitch-text__zalgo-mark">&#x0336;&#x0358;</span
+              ><span class="glitch-text__zalgo-mark">&#x0346;&#x0332;</span
+              ><span class="glitch-text__zalgo-mark">&#x035d;&#x031d;</span
+              ><span class="glitch-text__zalgo-mark">&#x0337;&#x0329;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035b;&#x0330;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--two"
+              ><span class="glitch-text__zalgo-mark">&#x031b;&#x0324;</span
+              ><span class="glitch-text__zalgo-mark">&#x034d;&#x033f;</span
+              ><span class="glitch-text__zalgo-mark">&#x035e;&#x032a;</span
+              ><span class="glitch-text__zalgo-mark">&#x0338;&#x0347;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x0360;&#x0333;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--three"
+              ><span class="glitch-text__zalgo-mark">&#x035c;&#x0316;</span
+              ><span class="glitch-text__zalgo-mark">&#x0334;&#x0352;</span
+              ><span class="glitch-text__zalgo-mark">&#x0361;&#x032c;</span
+              ><span class="glitch-text__zalgo-mark">&#x034f;&#x0317;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035f;&#x0339;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--four"
+              ><span class="glitch-text__zalgo-mark">&#x0335;&#x0359;</span
+              ><span class="glitch-text__zalgo-mark">&#x034e;&#x0325;</span
+              ><span class="glitch-text__zalgo-mark">&#x0362;&#x0330;</span
+              ><span class="glitch-text__zalgo-mark">&#x034a;&#x031c;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035a;&#x0331;</span
+              ></span
+            ></span
+          >
         </h1>
         <p>
           The city went dark at 03:17, one district at a time. Every street
@@ -539,8 +1174,58 @@
           broadcast your name, one letter every six seconds, from a machine that
           had been disconnected for nineteen years.
         </p>
-        <h2 class="glitch-text" data-text="Recovered Fragments">
+        <h2
+          aria-label="Recovered Fragments"
+          class="glitch-text"
+          data-text="Recovered Fragments"
+        >
           <span class="glitch-text__content">Recovered Fragments</span>
+          <span
+            class="glitch-text__roll"
+            aria-hidden="true"
+            data-text="Recovered Fragments"
+          ></span>
+          <span
+            class="glitch-text__dropout"
+            aria-hidden="true"
+            data-text="Recovered Fragments"
+          ></span>
+          <span class="glitch-text__zalgo" aria-hidden="true"
+            >Recovered Fragments
+            <span class="glitch-text__zalgo-set glitch-text__zalgo-set--one"
+              ><span class="glitch-text__zalgo-mark">&#x0336;&#x0358;</span
+              ><span class="glitch-text__zalgo-mark">&#x0346;&#x0332;</span
+              ><span class="glitch-text__zalgo-mark">&#x035d;&#x031d;</span
+              ><span class="glitch-text__zalgo-mark">&#x0337;&#x0329;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035b;&#x0330;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--two"
+              ><span class="glitch-text__zalgo-mark">&#x031b;&#x0324;</span
+              ><span class="glitch-text__zalgo-mark">&#x034d;&#x033f;</span
+              ><span class="glitch-text__zalgo-mark">&#x035e;&#x032a;</span
+              ><span class="glitch-text__zalgo-mark">&#x0338;&#x0347;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x0360;&#x0333;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--three"
+              ><span class="glitch-text__zalgo-mark">&#x035c;&#x0316;</span
+              ><span class="glitch-text__zalgo-mark">&#x0334;&#x0352;</span
+              ><span class="glitch-text__zalgo-mark">&#x0361;&#x032c;</span
+              ><span class="glitch-text__zalgo-mark">&#x034f;&#x0317;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035f;&#x0339;</span
+              ></span
+            ><span class="glitch-text__zalgo-set glitch-text__zalgo-set--four"
+              ><span class="glitch-text__zalgo-mark">&#x0335;&#x0359;</span
+              ><span class="glitch-text__zalgo-mark">&#x034e;&#x0325;</span
+              ><span class="glitch-text__zalgo-mark">&#x0362;&#x0330;</span
+              ><span class="glitch-text__zalgo-mark">&#x034a;&#x031c;</span
+              ><span class="glitch-text__zalgo-mark"
+                >&#x035a;&#x0331;</span
+              ></span
+            ></span
+          >
         </h2>
         <p>
           Archive cameras caught a figure crossing Platform Nine after curfew.
